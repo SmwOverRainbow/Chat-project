@@ -33,11 +33,11 @@ const Login = () => {
       }}
     >
       {({ errors, touched }) => (
-        <Form className="col-12 col-md-6 mt-3 mt-mb-0">
+        <Form className="col-12 col-md-3 mt-3 mt-mb-0 container-fluid">
           <h1 class="text-center mb-4">Войти</h1>
           <div className="form-floating mb-4">
             <label htmlFor="username" className="col-sm-2 col-form-label"></label>
-            <div class="col-sm-10">
+            <div class="col-sm-10 offset-sm-1">
               <Field name="username" className={classNameField} placeholder="Ваш ник" />
               {errors.username && touched.username ? (
                 <div>{errors.username}</div>
@@ -46,7 +46,7 @@ const Login = () => {
           </div>
           <div className="form-floating mb-4">
             <label htmlFor="password" className="col-sm-2 col-form-label"></label>
-            <div class="col-sm-10">
+            <div class="col-sm-10 offset-sm-1">
               <Field type="password" name="password" className={classNameField} placeholder="Пароль" />
               {errors.password && touched.password ? (
                 <div>{errors.password}</div>
@@ -55,7 +55,7 @@ const Login = () => {
             </div>
           </div>
           <div className="form-floating mb-4">
-            <div className="col-sm-10 offset-sm-2">
+            <div className="col-sm-10 offset-sm-1">
               <button type="submit" className="w-100 mb-3 btn btn-outline-primary">Войти</button>
             </div>
           </div>

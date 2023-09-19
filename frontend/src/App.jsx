@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 import Login from './Login.jsx';
-import MainPage from './Root.jsx';
+import MainPage from './Chat.jsx';
 import NotFound from './NotFound.jsx';
 
 const App = () => {
