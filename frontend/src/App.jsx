@@ -4,9 +4,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
-import Login from './Login.jsx';
-import MainPage from './Chat.jsx';
-import NotFound from './NotFound.jsx';
+import Login from './components/Login.jsx';
+import MainPage from './components/ChatPage.jsx';
+import NotFound from './components/NotFound.jsx';
 
 const App = () => {
   return (

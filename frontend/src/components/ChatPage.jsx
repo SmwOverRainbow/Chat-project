@@ -6,10 +6,13 @@ const MainPage = () => {
 // const location = useLocation();
   const navigate = useNavigate();
   const getData = async (token) => {
+    // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     try {
-      const responce = await axios.get('/api/v1/data', {headers: {Authorization: `Bearer ${token}`}});
-      console.log('here', responce);
+      console.log('here token', token);
+      const responce = await axios.get('/api/v1/data', { headers: { 'Authorization': `Bearer ${token}` }});
+      console.log('responce', responce);
     } catch (e) {
+      console.log('error request');
       console.error(e);
     }
   };
@@ -19,6 +22,7 @@ const MainPage = () => {
     if (!token) {
       navigate('login', { replace: false });
     } else {
+      console.log('before request');
       getData(token);
     }
   }, [navigate]);
