@@ -3,11 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-// import Container from 'react-bootstrap/Container';
 import { Container, Col, Row, Card, Image } from 'react-bootstrap';
-// import Image from 'react-bootstrap/Image';
-// import Navbar from 'react-bootstrap/Navbar';
-// import Button from 'react-bootstrap/Button';
 import image from '../images/logoChat.jpeg';
 
 const Login = () => {
@@ -53,15 +49,15 @@ const Login = () => {
                     <Form className="col-12 col-md-12 mt-3 mt-mb-0">
                       <h1 class="text-center mb-4">Войти</h1>
                       <div className="form-floating mb-3">
-                        <label htmlFor="username" className="col-sm-2 col-form-label"/ >
+                        <label htmlFor="username" className="col-sm-2 col-form-label">Ваш ник</label>
                         <Field name="username" className={classNameField} placeholder="Ваш ник" required />
                       </div>
                       <div className="form-floating mb-3">
-                        <label htmlFor="password" className="col-sm-2 col-form-label" />
+                        <label htmlFor="password" className="col-sm-2 col-form-label">Пароль</label>
                         <Field type="password" name="password" className={classNameField} placeholder="Пароль" required />
                         {state.authError && (<div className="invalid-tooltip">Неверные имя пользователя или пароль</div>)}
                       </div>
-                      <button type="submit" className="w-100 mb-3 btn btn-outline-primary">{'Войти'}</button>
+                      <button type="submit" className="w-100 mb-3 btn btn-outline-primary">Войти</button>
                     </Form>
                     )}
                   </Formik>
