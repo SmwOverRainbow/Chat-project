@@ -39,21 +39,21 @@ const ModalAddRename = (props) => {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <Form onSubmit={formik.handleSubmit}>
-        <Form.Group className="mt-3 mt-mb-0">
-          <Form.Label hidden>nameChannel</Form.Label>
-          <Form.Control
-            autoFocus={true}
-            id="nameChannel"
-            name="name"
-            type="text"
-            onChange={formik.handleChange}
-            value={formik.values.name}
-            className={`form-control w-100 ${formik.errors.name && formik.touched.name ? 'is-invalid' : ''}`}
-          />
-          <Form.Control.Feedback className="invalid-feedback">{formik.errors.name && formik.touched.name ? formik.errors.name : null}</Form.Control.Feedback>
-        </Form.Group>
-        </Form>
+          <Form onSubmit={formik.handleSubmit}>
+            <Form.Group className="mt-3 mt-mb-0">
+              <Form.Label hidden>nameChannel</Form.Label>
+              <Form.Control
+                autoFocus={true}
+                id="nameChannel"
+                name="name"
+                type="text"
+                onChange={formik.handleChange}
+                value={formik.values.name}
+                className={`form-control w-100 ${formik.errors.name && formik.touched.name ? 'is-invalid' : ''}`}
+              />
+              <Form.Control.Feedback className="invalid-feedback">{formik.errors.name && formik.touched.name ? formik.errors.name : null}</Form.Control.Feedback>
+            </Form.Group>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
