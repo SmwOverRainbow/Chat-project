@@ -1,10 +1,11 @@
 // import { useSelector } from 'react-redux';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { useTranslation } from 'react-i18next';
+import { Button, Modal } from 'react-bootstrap';
 
 const ModalRemove = (props) => {
   const { show, closeFn, title, actionSubmit, /* nameChannel, id */ } = props;
   // console.log('nameChannel', nameChannel);
+  const { t } = useTranslation();
   const handleClose = () => closeFn();
 
   return (
@@ -14,14 +15,14 @@ const ModalRemove = (props) => {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        Уверены?
+        {t('modalRemove.areYouSure')}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Отменить
+            {t('modalRemove.btnCancel')}
           </Button>
           <Button variant="danger" onClick={actionSubmit}>
-            Удалить
+            {t('modalRemove.btnSubmit')}
           </Button>
         </Modal.Footer>
       </Modal>

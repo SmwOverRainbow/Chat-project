@@ -1,14 +1,14 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Button from 'react-bootstrap/Button';
-import { AuthContext } from '../authContext.js';
 import { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Container, Navbar, Button } from 'react-bootstrap';
+import { AuthContext } from '../authContext.js';
 
 const Layout = () => {
   const { isLoggedIn, logOut } = useContext(AuthContext);
   const navigate = useNavigate();
-  const btnText = isLoggedIn() ? 'Выйти' : 'Войти';
+  const { t } = useTranslation();
+  const btnText = isLoggedIn() ? t('layout.logOut') : t('layout.logIn');
 
   const handleClick = () => {
     if (isLoggedIn()) {
@@ -21,7 +21,7 @@ const Layout = () => {
     <div className="d-flex flex-column h-100">
       <Navbar className="shadow-sm navbar-expand-lg navbar-light bg-white">
         <Container>
-          <Navbar.Brand href="#">Hexlet Chat</Navbar.Brand>
+          <Navbar.Brand href="#">{t('layout.chatName')}</Navbar.Brand>
           <Button onClick={handleClick} variant="primary">{btnText}</Button>
         </Container>
       </Navbar>

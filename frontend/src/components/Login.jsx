@@ -1,24 +1,25 @@
+import axios from 'axios';
+import * as yup from 'yup';
 import { useFormik } from 'formik';
 import React, { useContext, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import * as yup from 'yup';
+import { useTranslation } from 'react-i18next';
 import {
   Container, Col, Row, Card, Image, Form, FloatingLabel, Button,
 } from 'react-bootstrap';
-import { AuthContext } from '../authContext';
+import { AuthContext } from '../authContext.js';
 import image from '../images/logoChat.jpeg';
 
 const Login = () => {
+  const { t } = useTranslation();
   const schema = yup.object().shape({
-    username: yup.mixed().required('Обязательное поле'),
-    password: yup.mixed().required('Обязательное поле'),
+    username: yup.mixed().required(t('loginPage.errors.required')),
+    password: yup.mixed().required(t('loginPage.errors.required')),
   });
   const navigate = useNavigate();
+  const { logIn } = useContext(AuthContext);
 
   const [authErr, setAuthErr] = useState(null);
-
-  const { logIn } = useContext(AuthContext);
 
   const formik = useFormik({
     validationSchema: schema,
@@ -36,7 +37,7 @@ const Login = () => {
         if (e.code === 'ERR_NETWORK') {
           alert('Server disconnect');
         }
-        setAuthErr('Неверные имя пользователя или пароль');
+        setAuthErr(t('loginPage.errors.notExist'));
       }
       actions.setSubmitting(false);
     },
@@ -56,10 +57,10 @@ const Login = () => {
                 </Col>
                 <Col className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                   <Form className="col-12 col-md-12 mt-3 mt-mb-0" onSubmit={formik.handleSubmit} noValidate>
-                    <h1 class="text-center mb-4">Войти</h1>
+                    <h1 className="text-center mb-4">{t('loginPage.logIn')}</h1>
                     <FloatingLabel
                       controlId="username"
-                      label="Ваш ник"
+                      label={t('loginPage.username')}
                       className="mb-3"
                     >
                       <Form.Control
@@ -75,7 +76,7 @@ const Login = () => {
                     </FloatingLabel>
                     <FloatingLabel
                       controlId="password"
-                      label="Пароль"
+                      label={t('loginPage.password')}
                       className="mb-3"
                     >
                       <Form.Control
@@ -89,7 +90,7 @@ const Login = () => {
                       <Form.Control.Feedback type="invalid" tooltip>{formik.errors.password || authErr}</Form.Control.Feedback>
                     </FloatingLabel>
                     <Button variant="outline-primary" type="submit" className="w-100 mb-3">
-                      Войти
+                      {t('loginPage.logIn')}
                     </Button>
                   </Form>
                 </Col>
@@ -97,8 +98,8 @@ const Login = () => {
             </Card.Body>
             <Card.Footer className="p-4">
               <div className="text-center">
-                <span>Нет аккаунта?  </span>
-                <a href="/signup">Регистрация</a>
+                <span>{t('loginPage.noAcc')}</span>
+                <a href="/signup">{t('loginPage.toSignup')}</a>
               </div>
             </Card.Footer>
           </Card>

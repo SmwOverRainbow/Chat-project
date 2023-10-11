@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field } from 'formik';
+import { useTranslation } from 'react-i18next';
 import { Container, Row, Col, Dropdown, ButtonGroup, Nav, Button } from 'react-bootstrap';
 import ModalAddRename from './ModalAddRename.jsx';
 import { initSocket } from '../socket.js';
@@ -31,7 +32,7 @@ const ChatPage = () => {
   const dispatch = useDispatch();
 
   const channels = useSelector((state) => {
-    console.log('state', state);
+    // console.log('state', state);
     return state.channels;
   });
 
@@ -78,12 +79,14 @@ const ChatPage = () => {
   const [renameChannelId, setRenameChannelId] = useState(null);
   const [removeChannelId, setRemoveChannelId] = useState(null);
 
+  const { t } = useTranslation();
+
   return (
     <Container className="h-100 my-4 overflow-hidden rounded shadow">
       <Row className="h-100 bg-white flex-md-row">
         <Col className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
           <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
-            <b>Каналы</b>
+            <b>{t('chatPage.channels')}</b>
             <Button type="button" variant="" className="p-0 text-primary btn-group-vertical" onClick={() => setShowAddChannel(true)}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
                 <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
@@ -94,7 +97,7 @@ const ChatPage = () => {
             <ModalAddRename
               show={showAddChannel}
               closeFn={() => setShowAddChannel(false)}
-              title={'Добавить канал'}
+              title={t('chatPage.addChannel')}
               actionSubmit={(nameChannel) => {
                 // console.log(nameChannel);
                 socket.emit('newChannel', { name: nameChannel }, (response) => {
@@ -114,7 +117,7 @@ const ChatPage = () => {
               const channel = channels.entities[id];
               const classNamesActive = channel.id === channels.currentChannelId ? 'btn-secondary' : '';
               return (
-                <Nav.Item class="nav-item w-100" key={id}>
+                <Nav.Item className="w-100" key={id}>
                   <Dropdown as={ButtonGroup} className="d-flex mt-1">
                     <Button variant="" className={`w-100 rounded-0 text-start text-truncate ${classNamesActive}`} onClick={() => dispatch(setCurrentChannel(channel.id))}>
                       <span class="me-1">#</span>{channel.name}
@@ -122,7 +125,7 @@ const ChatPage = () => {
                     {channel.removable && (
                       <>
                         <Dropdown.Toggle aria-expanded="false" variant={''} className={`flex-grow-0 dropdown-toggle-split ${classNamesActive}`}>
-                          <span class="visually-hidden">Управление каналом</span>
+                          <span className="visually-hidden">Управление каналом</span>
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                           <Dropdown.Item onClick={() => setRemoveChannelId(id)}>Удалить</Dropdown.Item>
@@ -137,7 +140,7 @@ const ChatPage = () => {
             <ModalAddRename
               show={Boolean(renameChannelId)}
               closeFn={() => setRenameChannelId(null)}
-              title={'Переименовать канал'}
+              title={t('chatPage.renameChannel')}
               actionSubmit={(nameChannel) => {
                 // console.log(nameChannel);
                 socket.emit('renameChannel', { id: renameChannelId, name: nameChannel }, (response) => {
@@ -149,7 +152,7 @@ const ChatPage = () => {
             <ModalRemove
               show={Boolean(removeChannelId)}
               closeFn={() => setRemoveChannelId(null)}
-              title={'Удалить канал'}
+              title={t('chatPage.removeChannel')}
               // id={channels.currentChannelId}
               actionSubmit={() => {
                 socket.emit('removeChannel', { id: removeChannelId }, (response) => {
@@ -160,19 +163,19 @@ const ChatPage = () => {
           </Nav>
         </Col>
         <Col className="p-0 h-100">
-          <div class="d-flex flex-column h-100">
-            <div class="bg-light mb-4 p-3 shadow-sm small">
-              <p class="m-0">
+          <div className="d-flex flex-column h-100">
+            <div className="bg-light mb-4 p-3 shadow-sm small">
+              <p className="m-0">
                 <b># {activeChannel ? activeChannel.name : 'general'}</b>
               </p>
-              <span class="text-muted"><span>{countMessages}</span> сообщения</span>
+              <span className="text-muted">{t('chatPage.messageCount.count', { count: countMessages })}</span>
             </div>
-            <div id="messages-box" class="chat-messages overflow-auto px-5 ">
+            <div id="messages-box" className="chat-messages overflow-auto px-5 ">
               {messages.ids.map((id) => {
                 const message = messages.entities[id];
                 if (message.channelId === activeChannel.id) {
                   return (
-                    <div class="text-break mb-2">
+                    <div className="text-break mb-2">
                       <b>admin</b>: <span>{message.message}</span>
                     </div>
                   );
@@ -181,7 +184,7 @@ const ChatPage = () => {
                 } 
               })}
             </div>
-            <div class="mt-auto px-5 py-3">
+            <div className="mt-auto px-5 py-3">
               <Formik
                 initialValues={{ message: '', channelId: 1 }}
                 onSubmit={ (values, actions) => {
@@ -190,7 +193,7 @@ const ChatPage = () => {
                     if (err) {
                       // console.log('err send message', err);
                     } else {
-                      console.log('success send message', response);
+                      // console.log('success send message', response);
                       actions.resetForm();
                     }
                   });
@@ -200,12 +203,12 @@ const ChatPage = () => {
                 {() => (
                 <Form className="col-12 col-md-12 mt-3 mt-mb-0">
                   <div className="input-group border-0 p-0 ps-2">
-                    <Field name="message" aria-label="Новое сообщение" autoFocus placeholder="Введите сообщение..." className="form-control" required />
-                    <Button type="submit" variant="" className="btn" disabled="">
+                    <Field name="message" aria-label="Новое сообщение" autoFocus placeholder={t('chatPage.messageLabel')} className="form-control" required />
+                    <Button type="submit" variant="" disabled="">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
                         <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"></path>
                       </svg>
-                      <span class="visually-hidden">Отправить</span>
+                      <span className="visually-hidden">{t('chatPage.btnSubmit')}</span>
                     </Button>
                   </div>
                 </Form>)}
