@@ -20,8 +20,8 @@
       modalAddRename: {
         errors: {
           notEmpty: 'Поле не должно быть пустым',
-          minLength: 'Не менее 3 символов',
-          maxLength: 'Не более 20 символов',
+          minLength: 'От 3 до 20 символов',
+          maxLength: 'От 3 до 20 символов',
           unique: 'Должно быть уникально',
           obsceneLxicon: 'Ненормативная лексика',
         },
@@ -42,12 +42,12 @@
       signupPage: {
         errors: {
           required: 'Обязательное поле',
-          minLengthName: 'Не менее 3 символов',
-          maxLengthName: 'Не более 20 символов',
+          minLengthName: 'От 3 до 20 символов',
+          maxLengthName: 'От 3 до 20 символов',
           minLengthPassword: 'Не менее 6 символов',
           mustMatch: 'Пароли должны совпадать',
           alreadyExists: 'Такой пользователь уже существует',
-          errNetwork: 'Ошибка сети',
+          errNetwork: 'Ошибка соединения',
           obsceneLxicon: 'Ненормативная лексика',
         },
         signup: 'Регистрация',
@@ -64,7 +64,7 @@
         addChannel: 'Добавить канал',
         renameChannel: 'Переименовать канал',
         removeChannel: 'Удалить канал',
-        serverErr: 'Ошибка сервера',
+        serverErr: 'Ошибка соединения',
         toasts: {
           createChannel: 'Канал создан',
           renameChannel: 'Канал переименован',
