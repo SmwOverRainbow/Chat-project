@@ -1,14 +1,16 @@
-// import { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { isProfanity } from '../utils/helpers.js';
 
 const ModalAddRename = (props) => {
   const channelsNames = useSelector((state) => {
     return state.channels.ids.map((id) => state.channels.entities[id].name);
   });
+  const [isSubmitBtnDisabled, setSubmitBtnDisabled] = useState(false);
 
   const { show, closeFn, title, actionSubmit, nameChannel } = props;
   const { t } = useTranslation();
@@ -17,7 +19,14 @@ const ModalAddRename = (props) => {
     name: yup.string().required(t('modalAddRename.errors.notEmpty'))
             .min(3, t('modalAddRename.errors.minLength'))
             .max(20, t('modalAddRename.errors.maxLength'))
-            .notOneOf(channelsNames, t('modalAddRename.errors.unique')),
+            .notOneOf(channelsNames, t('modalAddRename.errors.unique'))
+            .test({
+              name: 'isProfanity',
+              skipAbsent: true,
+              test(value, ctx) {
+                return isProfanity(value) ? ctx.createError({ message: t('modalAddRename.errors.obsceneLxicon') }) : true;
+              }
+            }),
   });
 
   const handleClose = () => closeFn();
@@ -27,9 +36,11 @@ const ModalAddRename = (props) => {
     },
     validationSchema: schema,
     onSubmit: (values, actions) => {
+      setSubmitBtnDisabled(true);
       // console.log('values formik', values);
-      actionSubmit(values.name);
-      actions.resetForm();
+      actionSubmit(values.name)
+        .then(() => actions.resetForm())
+        .finally(() => setSubmitBtnDisabled(false) );
     },
     validateOnChange: false,
     validateOnBlur: false,
@@ -62,7 +73,7 @@ const ModalAddRename = (props) => {
           <Button variant="secondary" onClick={handleClose}>
             {t('modalAddRename.btnCancel')}
           </Button>
-          <Button variant="primary" onClick={formik.handleSubmit}>
+          <Button variant="primary" onClick={formik.handleSubmit} disabled={isSubmitBtnDisabled}>
             {t('modalAddRename.btnSubmit')}
           </Button>
         </Modal.Footer>

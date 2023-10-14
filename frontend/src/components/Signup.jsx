@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
@@ -7,15 +7,26 @@ import { useTranslation } from 'react-i18next';
 import {
   Container, Col, Row, Card, Image, Form, Button, FloatingLabel,
 } from 'react-bootstrap';
+import { AuthContext } from '../authContext.js';
+import { notifyError } from '../utils/toasts.js';
+import { isProfanity } from '../utils/helpers.js';
 import image from '../images/logoChat.jpeg';
 
 const Signup = () => {
+  const { logIn } = useContext(AuthContext);
   const { t } = useTranslation();
   const schema = yup.object().shape({
     username: yup.string()
                 .required(t('signupPage.errors.required'))
                 .min(3, t('signupPage.errors.minLength'))
-                .max(20, t('signupPage.errors.maxLength')),
+                .max(20, t('signupPage.errors.maxLength'))
+                .test({
+                  name: 'isProfanity',
+                  skipAbsent: true,
+                  test(value, ctx) {
+                    return isProfanity(value) ? ctx.createError({ message: t('signupPage.errors.obsceneLxicon') }) : true;
+                  }
+                }),
     password: yup.string()
                 .required(t('signupPage.errors.required'))
                 .min(6, t('signupPage.errors.minLengthPassword')),
@@ -40,8 +51,9 @@ const Signup = () => {
         setServerErrMessage('');
         const { username, password } = values;
         const response = await axios.post('/api/v1/signup', { username, password });
-        const { token } = response.data;
-        localStorage.setItem('token', token);
+        const { token, username: responseUsername } = response.data;
+        logIn(token, responseUsername);
+        // setCurrentUser(username);
         navigate('/', { replace: false })
       } catch (e) {
         // console.log('error', e);
@@ -49,7 +61,7 @@ const Signup = () => {
           setServerErrMessage(t('signupPage.errors.alreadyExists'));
         }
         if (e.code === 'ERR_NETWORK') {
-          alert('Server disconnect');
+          notifyError(t('signupPage.errors.errNetwork'));
         }
       }
       actions.setSubmitting(false);

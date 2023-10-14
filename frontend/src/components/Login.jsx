@@ -8,6 +8,7 @@ import {
   Container, Col, Row, Card, Image, Form, FloatingLabel, Button,
 } from 'react-bootstrap';
 import { AuthContext } from '../authContext.js';
+import { notifyError } from '../utils/toasts.js';
 import image from '../images/logoChat.jpeg';
 
 const Login = () => {
@@ -29,15 +30,21 @@ const Login = () => {
     },
     onSubmit: async (values, actions) => {
       try {
-        const responce = await axios.post('/api/v1/login', values);
-        const { token } = responce.data;
-        logIn(token);
-        navigate('/', { replace: false })
+        const response = await axios.post('/api/v1/login', values);
+        const { token, username } = response.data;
+        // console.log('values.username', values.username);
+        // setCurrentUser(response.data.username);
+        console.log('response.data.token', response.data.token);
+        logIn(token, username);
+        navigate('/', { replace: false });
       } catch (e) {
+        // console.log('axios err', e);
         if (e.code === 'ERR_NETWORK') {
-          alert('Server disconnect');
+          notifyError(t('signupPage.errors.errNetwork'));
         }
-        setAuthErr(t('loginPage.errors.notExist'));
+        if (e.response.status === 401) {
+          setAuthErr(t('loginPage.errors.notExist'));
+        }
       }
       actions.setSubmitting(false);
     },

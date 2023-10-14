@@ -4,11 +4,12 @@ export const AuthContext = createContext({});
 
 export const AuthContextProvider = (props) => {
   const [token, setToken] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     const tokenFromLocalStorage = localStorage.getItem('token');
     setToken(tokenFromLocalStorage);
-  }, []);
+  }, []); 
 
   const authObject = {
     token: token,
@@ -16,13 +17,17 @@ export const AuthContextProvider = (props) => {
     logOut: () => {
       localStorage.removeItem('token');
       setToken('');
+      setUsername('');
       },
-    logIn: (responseToken) => {
+    logIn: (responseToken, responseUsername) => {
+      console.log('in auth context, token', responseToken);
       localStorage.setItem('token', responseToken);
       setToken(responseToken);
+      setUsername(responseUsername);
       },
-    // setCurrentUser: (user) => authObject.currentUser = user,
-    // currentUser: null,
+      getUsername: () => username,
+    // setCurrentUser: (user) => {(authObject.currentUser = user)},
+    
   };
 
   return (

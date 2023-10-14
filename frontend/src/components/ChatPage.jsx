@@ -1,44 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Formik, Form, Field } from 'formik';
+import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { Container, Row, Col, Dropdown, ButtonGroup, Nav, Button } from 'react-bootstrap';
+import {
+  Container, Row, Col, Dropdown, ButtonGroup, Nav, Button, InputGroup, Form,
+} from 'react-bootstrap';
 import ModalAddRename from './ModalAddRename.jsx';
+import ModalRemove from './ModalRemove.jsx';
 import { initSocket } from '../socket.js';
 import {
   addManyChannels, addOneChannel, removeChannel, renameChannel, setCurrentChannel
   } from '../slices/channelsSlice.js';
 import { addManyMessages, addOneMessage } from '../slices/messagesSlice.js';
-import ModalRemove from './ModalRemove.jsx';
+import { AuthContext } from '../authContext.js';
+import { notifySuccess, notifyError } from '../utils/toasts.js';
+import { getData, getCensoredMessage } from '../utils/helpers.js';
+import { ReactComponent as AddChannelIcon } from '../images/addChannel.svg';
+import { ReactComponent as AddMessageIcon } from '../images/addMessage.svg';
 
 let socket;
 
 const ChatPage = () => {
 // const location = useLocation();
   const navigate = useNavigate();
-  const getData = async (token) => {
-    // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    try {
-      const response = await axios.get('/api/v1/data', { headers: { 'Authorization': `Bearer ${token}` }});
-      // console.log('response', response);
-      return response.data;
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const dispatch = useDispatch();
+  const { /* token, */ getUsername } = useContext(AuthContext);
+  // console.log('token in chat page', token);
+  const { t } = useTranslation();
 
-  const channels = useSelector((state) => {
-    // console.log('state', state);
-    return state.channels;
-  });
+  const channels = useSelector((state) => state.channels);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    // console.log('token in chat page from auth', token);
+    const tokenFromLS = localStorage.getItem('token');
+    // console.log('token in chat page from localstorage', tokenFromLS);
+    if (tokenFromLS) {
       socket = socket || initSocket();
       socket.on('newMessage', (message) => dispatch(addOneMessage(message)));
       socket.on('newChannel', (channel) => {
@@ -51,9 +48,8 @@ const ChatPage = () => {
         }
       });
       socket.on('renameChannel', (channel) => dispatch(renameChannel({ id: channel.id, changes: { name: channel.name }})));
-      getData(token)
+      getData(tokenFromLS)
         .then((data) => {
-          // console.log(data.currentChannelId);
           dispatch(addManyChannels(data.channels));
           dispatch(addManyMessages(data.messages));
         })
@@ -69,17 +65,33 @@ const ChatPage = () => {
       acc += 1;
     }
     return acc;
-    }, 0);
+  }, 0);
 
   const activeChannel = channels.entities[channels.currentChannelId];
-  // console.log('activeChannel', activeChannel);
-  // console.log('name channel', activeChannel.name);
 
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [renameChannelId, setRenameChannelId] = useState(null);
   const [removeChannelId, setRemoveChannelId] = useState(null);
 
-  const { t } = useTranslation();
+  const formik = useFormik({
+    initialValues: {
+      message: '',
+      channelId: 1,
+      username: getUsername(),
+    },
+    onSubmit: (values, actions) => {
+      values.channelId = channels.currentChannelId;
+      socket.timeout(5000).emit('newMessage', values, (err, response) => {
+        if (err) {
+          // console.log('err send message', err);
+        } else {
+          // console.log('success send message', response);
+          actions.resetForm();
+        }
+      })
+      actions.setSubmitting(false);
+    },
+  });
 
   return (
     <Container className="h-100 my-4 overflow-hidden rounded shadow">
@@ -88,27 +100,29 @@ const ChatPage = () => {
           <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
             <b>{t('chatPage.channels')}</b>
             <Button type="button" variant="" className="p-0 text-primary btn-group-vertical" onClick={() => setShowAddChannel(true)}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
-                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-              </svg>
+              <AddChannelIcon />
               <span className="visually-hidden">+</span>
             </Button>
             <ModalAddRename
               show={showAddChannel}
               closeFn={() => setShowAddChannel(false)}
               title={t('chatPage.addChannel')}
-              actionSubmit={(nameChannel) => {
-                // console.log(nameChannel);
-                socket.emit('newChannel', { name: nameChannel }, (response) => {
-                  if (response.status === 'ok') {
-                    setShowAddChannel(false);
-                    dispatch(setCurrentChannel(response.data.id));
-                  } else {
-                    alert('Error');
-                  }
-                });
-              }}
+              actionSubmit={(nameChannel) => (
+                new Promise((resolve, reject) => {
+                  socket.emit('newChannel', { name: nameChannel }, (response) => {
+                    if (response.status === 'ok') {
+                      setShowAddChannel(false);
+                      notifySuccess(t('chatPage.toasts.createChannel'));
+                      dispatch(addOneChannel(response.data));
+                      dispatch(setCurrentChannel(response.data.id));
+                      resolve();
+                    } else {
+                      notifyError(t('chatPage.toasts.serverErr'));
+                      reject();
+                    }
+                  });
+                })
+              )}
               nameChannel={''}
             />
           </div>
@@ -125,11 +139,11 @@ const ChatPage = () => {
                     {channel.removable && (
                       <>
                         <Dropdown.Toggle aria-expanded="false" variant={''} className={`flex-grow-0 dropdown-toggle-split ${classNamesActive}`}>
-                          <span className="visually-hidden">Управление каналом</span>
+                          <span className="visually-hidden">{t('chatPage.labelManage')}</span>
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => setRemoveChannelId(id)}>Удалить</Dropdown.Item>
-                          <Dropdown.Item onClick={() => setRenameChannelId(id)}>Переименовать</Dropdown.Item>
+                          <Dropdown.Item onClick={() => setRemoveChannelId(id)}>{t('chatPage.deleteDropdownBtn')}</Dropdown.Item>
+                          <Dropdown.Item onClick={() => setRenameChannelId(id)}>{t('chatPage.renameDropdownBtn')}</Dropdown.Item>
                         </Dropdown.Menu>
                       </>
                     )}
@@ -144,7 +158,12 @@ const ChatPage = () => {
               actionSubmit={(nameChannel) => {
                 // console.log(nameChannel);
                 socket.emit('renameChannel', { id: renameChannelId, name: nameChannel }, (response) => {
-                  response.status === 'ok' ? setRenameChannelId(null) : alert('Error');
+                  if (response.status === 'ok') {
+                    setRenameChannelId(null);
+                    notifySuccess(t('chatPage.toasts.renameChannel'));
+                   } else {
+                    notifyError(t('chatPage.toasts.serverErr'));
+                   }
                 });
               }}
               nameChannel={renameChannelId ? channels.entities[renameChannelId].name : ''}
@@ -156,7 +175,12 @@ const ChatPage = () => {
               // id={channels.currentChannelId}
               actionSubmit={() => {
                 socket.emit('removeChannel', { id: removeChannelId }, (response) => {
-                  response.status === 'ok' ? setRemoveChannelId(null) : alert('Error');
+                  if (response.status === 'ok') {
+                    setRemoveChannelId(null);
+                    notifySuccess(t('chatPage.toasts.deleteChannel'));
+                   } else {
+                    notifyError(t('chatPage.toasts.serverErr'));
+                   }
                 });
               }}
             />
@@ -176,7 +200,7 @@ const ChatPage = () => {
                 if (message.channelId === activeChannel.id) {
                   return (
                     <div className="text-break mb-2">
-                      <b>admin</b>: <span>{message.message}</span>
+                      <b>{message.username}</b>: <span>{getCensoredMessage(message.message)}</span> 
                     </div>
                   );
                 } else {
@@ -185,34 +209,25 @@ const ChatPage = () => {
               })}
             </div>
             <div className="mt-auto px-5 py-3">
-              <Formik
-                initialValues={{ message: '', channelId: 1 }}
-                onSubmit={ (values, actions) => {
-                  values.channelId = channels.currentChannelId;
-                  socket.timeout(5000).emit('newMessage', values, (err, response) => {
-                    if (err) {
-                      // console.log('err send message', err);
-                    } else {
-                      // console.log('success send message', response);
-                      actions.resetForm();
-                    }
-                  });
-                  actions.setSubmitting(false);
-                }}
-                >
-                {() => (
-                <Form className="col-12 col-md-12 mt-3 mt-mb-0">
-                  <div className="input-group border-0 p-0 ps-2">
-                    <Field name="message" aria-label="Новое сообщение" autoFocus placeholder={t('chatPage.messageLabel')} className="form-control" required />
-                    <Button type="submit" variant="" disabled="">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"></path>
-                      </svg>
-                      <span className="visually-hidden">{t('chatPage.btnSubmit')}</span>
-                    </Button>
-                  </div>
-                </Form>)}
-              </Formik>
+              <Form className="py-1 border rounded-2" onSubmit={formik.handleSubmit} noValidate>
+                <InputGroup>
+                  <Form.Control
+                    name="message"
+                    autoFocus={true}
+                    className="border-0 p-0 ps-2 rounded-2"
+                    type="text"
+                    placeholder={t('chatPage.messagePlaceholder')}
+                    aria-label={t('chatPage.messageLabel')}
+                    onChange={formik.handleChange}
+                    value={formik.values.message}
+                    required
+                  />
+                  <Button type="submit" className="btn-group-vertical" variant="" disabled="">
+                    <AddMessageIcon />
+                    <span className="visually-hidden">{t('chatPage.btnSubmit')}</span>
+                  </Button>
+                </InputGroup>
+              </Form>
             </div>
           </div>
         </Col>
