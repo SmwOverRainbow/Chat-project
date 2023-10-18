@@ -18,13 +18,13 @@ const Signup = () => {
   const schema = yup.object().shape({
     username: yup.string()
                 .required(t('signupPage.errors.required'))
-                .min(3, t('signupPage.errors.minLength'))
-                .max(20, t('signupPage.errors.maxLength'))
+                .min(3, t('signupPage.errors.minLengthName'))
+                .max(20, t('signupPage.errors.maxLengthName'))
                 .test({
                   name: 'isProfanity',
                   skipAbsent: true,
                   test(value, ctx) {
-                    return isProfanity(value) ? ctx.createError({ message: t('signupPage.errors.obsceneLxicon') }) : true;
+                    return isProfanity(value) ? ctx.createError({ message: t('signupPage.errors.obsceneLexicon') }) : true;
                   }
                 }),
     password: yup.string()
@@ -53,10 +53,8 @@ const Signup = () => {
         const response = await axios.post('/api/v1/signup', { username, password });
         const { token, username: responseUsername } = response.data;
         logIn(token, responseUsername);
-        // setCurrentUser(username);
         navigate('/', { replace: false })
       } catch (e) {
-        // console.log('error', e);
         if (e.response && e.response.status === 409) {
           setServerErrMessage(t('signupPage.errors.alreadyExists'));
         }
