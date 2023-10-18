@@ -2,14 +2,13 @@ import axios from 'axios';
 import * as filter from 'leo-profanity';
 
 filter.loadDictionary('ru');
-filter.add('какашка');
 
 export const getData = async (token) => {
   try {
     const response = await axios.get('/api/v1/data', { headers: { 'Authorization': `Bearer ${token}` }});
     return response.data;
   } catch (e) {
-    console.error(e);
+    throw e;
   }
 };
 

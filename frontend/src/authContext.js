@@ -1,33 +1,29 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 
 export const AuthContext = createContext({});
 
 export const AuthContextProvider = (props) => {
-  const [token, setToken] = useState('');
-  const [username, setUsername] = useState('');
-
-  useEffect(() => {
-    const tokenFromLocalStorage = localStorage.getItem('token');
-    setToken(tokenFromLocalStorage);
-  }, []); 
+  const tokenFromLocalStorage = localStorage.getItem('token');
+  const usernameFromLocalStorage = localStorage.getItem('username');
+  const [token, setToken] = useState(tokenFromLocalStorage);
+  const [username, setUsername] = useState(usernameFromLocalStorage);
 
   const authObject = {
     token: token,
     isLoggedIn: () => Boolean(token),
     logOut: () => {
       localStorage.removeItem('token');
+      localStorage.removeItem('username');
       setToken('');
       setUsername('');
       },
     logIn: (responseToken, responseUsername) => {
-      console.log('in auth context, token', responseToken);
       localStorage.setItem('token', responseToken);
+      localStorage.setItem('username', responseUsername);
       setToken(responseToken);
       setUsername(responseUsername);
       },
-      getUsername: () => username,
-    // setCurrentUser: (user) => {(authObject.currentUser = user)},
-    
+      username: username,
   };
 
   return (

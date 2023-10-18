@@ -32,13 +32,9 @@ const Login = () => {
       try {
         const response = await axios.post('/api/v1/login', values);
         const { token, username } = response.data;
-        // console.log('values.username', values.username);
-        // setCurrentUser(response.data.username);
-        console.log('response.data.token', response.data.token);
         logIn(token, username);
         navigate('/', { replace: false });
       } catch (e) {
-        // console.log('axios err', e);
         if (e.code === 'ERR_NETWORK') {
           notifyError(t('signupPage.errors.errNetwork'));
         }

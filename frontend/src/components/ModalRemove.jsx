@@ -1,10 +1,8 @@
-// import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'react-bootstrap';
 
 const ModalRemove = (props) => {
-  const { show, closeFn, title, actionSubmit, /* nameChannel, id */ } = props;
-  // console.log('nameChannel', nameChannel);
+  const { show, closeFn, title, actionSubmit } = props;
   const { t } = useTranslation();
   const handleClose = () => closeFn();
 
