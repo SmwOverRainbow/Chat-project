@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider as ReduxProvider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
+import { io } from 'socket.io-client';
 import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
+import { SocketEmitContextProvider } from './socketEmitContext.js';
 import { AuthContextProvider } from './authContext.js';
 import './index.css';
 import init from './init.js';
@@ -12,17 +14,13 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 const app = async () => {
-  await init();
+  const socket = io();
+  await init(socket);
 
   const rollbarConfig = {
     accessToken: 'cec2258c5f3a484185e7742861fa0ca2',
     environment: 'testenv',
   };
-
-  // const TestError = () => {
-  //   const a = null;
-  //   return a.hello();
-  // };
 
   const root = ReactDOM.createRoot(document.getElementById('root'));
   root.render(
@@ -31,9 +29,10 @@ const app = async () => {
         <ErrorBoundary>
           <ReduxProvider store={store}>
             <AuthContextProvider>
-              {/* <TestError /> */}
-              <App />
-              <ToastContainer />
+              <SocketEmitContextProvider socket={socket}>
+                <App />
+                <ToastContainer />
+              </SocketEmitContextProvider>
             </AuthContextProvider>
           </ReduxProvider>
         </ErrorBoundary>

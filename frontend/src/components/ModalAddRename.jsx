@@ -11,10 +11,11 @@ const ModalAddRename = (props) => {
     return state.channels.ids.map((id) => state.channels.entities[id].name);
   });
   const [isSubmitBtnDisabled, setSubmitBtnDisabled] = useState(false);
+  const [isSubmitFieldDisabled, setSubmitFieldDisabled] = useState(false);
 
   const { show, closeFn, title, actionSubmit, nameChannel } = props;
   const { t } = useTranslation();
-  // console.log('nameChannel', nameChannel);
+
   const schema = yup.object({
     name: yup.string().required(t('modalAddRename.errors.notEmpty'))
             .min(3, t('modalAddRename.errors.minLength'))
@@ -24,27 +25,32 @@ const ModalAddRename = (props) => {
               name: 'isProfanity',
               skipAbsent: true,
               test(value, ctx) {
-                return isProfanity(value) ? ctx.createError({ message: t('modalAddRename.errors.obsceneLxicon') }) : true;
+                return isProfanity(value) ? ctx.createError({ message: t('modalAddRename.errors.obsceneLexicon') }) : true;
               }
             }),
   });
 
-  const handleClose = () => closeFn();
   const formik = useFormik({
     initialValues: {
       name: nameChannel,
     },
     validationSchema: schema,
-    onSubmit: (values, actions) => {
+    onSubmit: async (values, actions) => {
       setSubmitBtnDisabled(true);
-      // console.log('values formik', values);
-      actionSubmit(values.name)
-        .then(() => actions.resetForm())
-        .finally(() => setSubmitBtnDisabled(false) );
+      setSubmitFieldDisabled(true);
+      await actionSubmit(values.name);
+      setSubmitBtnDisabled(false);
+      setSubmitFieldDisabled(false);
+      actions.resetForm();
     },
     validateOnChange: false,
     validateOnBlur: false,
   });
+
+  const handleClose = () => {
+    closeFn();
+    formik.resetForm();
+  };
 
   return (
     <>
@@ -55,7 +61,7 @@ const ModalAddRename = (props) => {
         <Modal.Body>
           <Form onSubmit={formik.handleSubmit}>
             <Form.Group className="mt-3 mt-mb-0">
-              <Form.Label hidden>{t('modalAddRename.label')}</Form.Label>
+              <Form.Label htmlFor="nameChannel" hidden>{t('modalAddRename.label')}</Form.Label>
               <Form.Control
                 autoFocus={true}
                 id="nameChannel"
@@ -64,6 +70,7 @@ const ModalAddRename = (props) => {
                 onChange={formik.handleChange}
                 value={formik.values.name}
                 className={`w-100 ${formik.errors.name && formik.touched.name ? 'is-invalid' : ''}`}
+                disabled={isSubmitFieldDisabled}
               />
               <Form.Control.Feedback className="invalid-feedback">{formik.errors.name && formik.touched.name ? formik.errors.name : null}</Form.Control.Feedback>
             </Form.Group>

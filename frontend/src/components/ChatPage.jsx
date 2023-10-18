@@ -8,58 +8,45 @@ import {
 } from 'react-bootstrap';
 import ModalAddRename from './ModalAddRename.jsx';
 import ModalRemove from './ModalRemove.jsx';
-import { initSocket } from '../socket.js';
 import {
-  addManyChannels, addOneChannel, removeChannel, renameChannel, setCurrentChannel
+  addManyChannels, addOneChannel, setCurrentChannelId
   } from '../slices/channelsSlice.js';
-import { addManyMessages, addOneMessage } from '../slices/messagesSlice.js';
+import { addManyMessages } from '../slices/messagesSlice.js';
+import { SocketEmitContext } from '../socketEmitContext.js';
 import { AuthContext } from '../authContext.js';
 import { notifySuccess, notifyError } from '../utils/toasts.js';
 import { getData, getCensoredMessage } from '../utils/helpers.js';
 import { ReactComponent as AddChannelIcon } from '../images/addChannel.svg';
 import { ReactComponent as AddMessageIcon } from '../images/addMessage.svg';
 
-let socket;
-
 const ChatPage = () => {
-// const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { /* token, */ getUsername } = useContext(AuthContext);
-  // console.log('token in chat page', token);
+  const { token, username, logOut } = useContext(AuthContext);
+  const clarify = useContext(SocketEmitContext);
   const { t } = useTranslation();
 
   const channels = useSelector((state) => state.channels);
 
   useEffect(() => {
-    // console.log('token in chat page from auth', token);
-    const tokenFromLS = localStorage.getItem('token');
-    // console.log('token in chat page from localstorage', tokenFromLS);
-    if (tokenFromLS) {
-      socket = socket || initSocket();
-      socket.on('newMessage', (message) => dispatch(addOneMessage(message)));
-      socket.on('newChannel', (channel) => {
-        dispatch(addOneChannel(channel));
-      });
-      socket.on('removeChannel', ({ id }) => {
-        dispatch(removeChannel(id));
-        if (id === channels.currentChannelId) {
-          dispatch(setCurrentChannel(1));
-        }
-      });
-      socket.on('renameChannel', (channel) => dispatch(renameChannel({ id: channel.id, changes: { name: channel.name }})));
-      getData(tokenFromLS)
+    if (token) {
+      getData(token)
         .then((data) => {
           dispatch(addManyChannels(data.channels));
           dispatch(addManyMessages(data.messages));
         })
+        .catch((e) => {
+          if (e.response.status === 401) {
+            logOut();
+            navigate('login', { replace: false });
+          }
+        });
     } else {
       navigate('login', { replace: false });
     }
-  }, [navigate, dispatch, channels.currentChannelId]);
+  }, [navigate, dispatch, channels.currentChannelId, token, logOut]);
 
   const messages = useSelector((state) => state.messages);
-  // console.log('messages', messages);
   const countMessages = messages.ids.reduce((acc, id) => {
     if(messages.entities[id].channelId === channels.currentChannelId) {
       acc += 1;
@@ -77,19 +64,21 @@ const ChatPage = () => {
     initialValues: {
       message: '',
       channelId: 1,
-      username: getUsername(),
+      username: username,
     },
     onSubmit: (values, actions) => {
       values.channelId = channels.currentChannelId;
-      socket.timeout(5000).emit('newMessage', values, (err, response) => {
-        if (err) {
-          // console.log('err send message', err);
-        } else {
-          // console.log('success send message', response);
+      if (values.message === '') {
+        return null;
+      }
+      clarify('newMessage', values)
+        .then(() => {
           actions.resetForm();
-        }
-      })
-      actions.setSubmitting(false);
+          })
+        .catch(() => {
+          notifyError(t('chatPage.toasts.serverErr'));
+        })
+        .finally(() => actions.setSubmitting(false));
     },
   });
 
@@ -107,22 +96,16 @@ const ChatPage = () => {
               show={showAddChannel}
               closeFn={() => setShowAddChannel(false)}
               title={t('chatPage.addChannel')}
-              actionSubmit={(nameChannel) => (
-                new Promise((resolve, reject) => {
-                  socket.emit('newChannel', { name: nameChannel }, (response) => {
-                    if (response.status === 'ok') {
-                      setShowAddChannel(false);
-                      notifySuccess(t('chatPage.toasts.createChannel'));
-                      dispatch(addOneChannel(response.data));
-                      dispatch(setCurrentChannel(response.data.id));
-                      resolve();
-                    } else {
-                      notifyError(t('chatPage.toasts.serverErr'));
-                      reject();
-                    }
-                  });
-                })
-              )}
+              actionSubmit={(nameChannel) => 
+                clarify('newChannel', { name: nameChannel })
+                  .then((data) => {
+                    setShowAddChannel(false);
+                    notifySuccess(t('chatPage.toasts.createChannel'));
+                    dispatch(addOneChannel(data));
+                    dispatch(setCurrentChannelId(data.id));
+                  })
+                  .catch(() => notifyError(t('chatPage.toasts.serverErr')))
+                }
               nameChannel={''}
             />
           </div>
@@ -133,7 +116,7 @@ const ChatPage = () => {
               return (
                 <Nav.Item className="w-100" key={id}>
                   <Dropdown as={ButtonGroup} className="d-flex mt-1">
-                    <Button variant="" className={`w-100 rounded-0 text-start text-truncate ${classNamesActive}`} onClick={() => dispatch(setCurrentChannel(channel.id))}>
+                    <Button variant="" className={`w-100 rounded-0 text-start text-truncate ${classNamesActive}`} onClick={() => dispatch(setCurrentChannelId(channel.id))}>
                       <span class="me-1">#</span>{channel.name}
                     </Button>
                     {channel.removable && (
@@ -155,34 +138,28 @@ const ChatPage = () => {
               show={Boolean(renameChannelId)}
               closeFn={() => setRenameChannelId(null)}
               title={t('chatPage.renameChannel')}
-              actionSubmit={(nameChannel) => {
-                // console.log(nameChannel);
-                socket.emit('renameChannel', { id: renameChannelId, name: nameChannel }, (response) => {
-                  if (response.status === 'ok') {
+              actionSubmit={(nameChannel) =>
+                clarify('renameChannel', { id: renameChannelId, name: nameChannel })
+                  .then(() => {
                     setRenameChannelId(null);
-                    notifySuccess(t('chatPage.toasts.renameChannel'));
-                   } else {
-                    notifyError(t('chatPage.toasts.serverErr'));
-                   }
-                });
-              }}
+                    notifySuccess(t('chatPage.toasts.renameChannel'))
+                  })
+                  .catch(() => notifyError(t('chatPage.toasts.serverErr')))
+              }
               nameChannel={renameChannelId ? channels.entities[renameChannelId].name : ''}
             />
             <ModalRemove
               show={Boolean(removeChannelId)}
               closeFn={() => setRemoveChannelId(null)}
               title={t('chatPage.removeChannel')}
-              // id={channels.currentChannelId}
-              actionSubmit={() => {
-                socket.emit('removeChannel', { id: removeChannelId }, (response) => {
-                  if (response.status === 'ok') {
+              actionSubmit={() =>
+                clarify('removeChannel', { id: removeChannelId })
+                  .then(() => {
                     setRemoveChannelId(null);
                     notifySuccess(t('chatPage.toasts.deleteChannel'));
-                   } else {
-                    notifyError(t('chatPage.toasts.serverErr'));
-                   }
-                });
-              }}
+                  })
+                  .catch(() => notifyError(t('chatPage.toasts.serverErr')))
+              }
             />
           </Nav>
         </Col>
