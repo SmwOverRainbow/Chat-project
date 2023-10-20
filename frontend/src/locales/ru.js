@@ -17,7 +17,10 @@
         noAcc: 'Нет аккаунта? ',
         toSignup: 'Регистрация',
       },
-      modalAddRename: {
+      modal: {
+        addChannelTitle: 'Добавить канал',
+        renameChannelTitle: 'Переименовать канал',
+        removeChannelTitle: 'Удалить канал',
         errors: {
           notEmpty: 'Поле не должно быть пустым',
           minLength: 'От 3 до 20 символов',
@@ -28,11 +31,8 @@
         label: 'Имя канала',
         btnCancel: 'Отменить',
         btnSubmit: 'Отправить',
-      },
-      modalRemove: {
         areYouSure: 'Уверены?',
-        btnCancel: 'Отменить',
-        btnSubmit: 'Удалить',
+        btnDelete: 'Удалить',
       },
       page404: {
         notFound: 'Страница не найдена',
@@ -61,15 +61,6 @@
         labelManage: 'Управление каналом',
         deleteDropdownBtn: 'Удалить',
         renameDropdownBtn: 'Переименовать',
-        addChannel: 'Добавить канал',
-        renameChannel: 'Переименовать канал',
-        removeChannel: 'Удалить канал',
-        toasts: {
-          createChannel: 'Канал создан',
-          renameChannel: 'Канал переименован',
-          deleteChannel: 'Канал удалён',
-          serverErr: 'Ошибка соединения',
-        },
         messageCount: {
           count_one: '{{count}} сообщение',
           count_few: '{{count}} сообщения',
@@ -78,6 +69,12 @@
         messagePlaceholder: 'Введите сообщение...',
         messageLabel: 'Новое сообщение',
         btnSubmit: 'Отправить',
+      },
+      toasts: {
+        createChannel: 'Канал создан',
+        renameChannel: 'Канал переименован',
+        deleteChannel: 'Канал удалён',
+        serverErr: 'Ошибка соединения',
       },
     },
   },

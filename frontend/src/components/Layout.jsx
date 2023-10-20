@@ -21,7 +21,7 @@ const Layout = () => {
     <div className="d-flex flex-column h-100">
       <Navbar className="shadow-sm navbar-expand-lg navbar-light bg-white">
         <Container>
-          <Navbar.Brand href="/login">{t('layout.chatName')}</Navbar.Brand>
+          <Navbar.Brand href="/">{t('layout.chatName')}</Navbar.Brand>
           <Button onClick={handleClick} variant="primary">{btnText}</Button>
         </Container>
       </Navbar>

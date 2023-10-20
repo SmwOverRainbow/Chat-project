@@ -1,11 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
-import Layout from './components/Layout.jsx';
-import Login from './components/Login.jsx';
-import ChatPage from './components/ChatPage.jsx';
-import NotFound from './components/NotFound.jsx';
-import Signup from './components/Signup.jsx';
+import Layout from './Layout.jsx';
+import Login from './Login.jsx';
+import ChatPage from './ChatPage.jsx';
+import NotFound from './NotFound.jsx';
+import Signup from './Signup.jsx';
 
 const App = () => {
   return (
