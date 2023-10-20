@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { SocketEmitContext } from '../../socketEmitContext.js';
+import { renameChannel } from '../../slices/channelsSlice.js';
 import { notifySuccess, notifyError } from '../../utils/toasts.js';
 import { closeWindow } from '../../slices/modalSlice.js';
 import { isProfanity } from '../../utils/helpers.js';
@@ -47,6 +48,7 @@ const RenameChannel = () => {
       .then(() => {
         dispatch(closeWindow());
         notifySuccess(t('toasts.renameChannel'));
+        dispatch(renameChannel({ id: data.id, update: { name: nameChannel } }));
       })
       .catch((e) => notifyError(t('toasts.serverErr')))
       .finally(() => setFormDisabled(false));
