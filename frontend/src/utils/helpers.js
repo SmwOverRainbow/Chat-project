@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as filter from 'leo-profanity';
 
 filter.loadDictionary('ru');
+filter.loadDictionary('en');
 
 export const getData = async (token) => {
   try {
