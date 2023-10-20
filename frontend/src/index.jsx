@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider as ReduxProvider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { io } from 'socket.io-client';
-import { Provider as RollbarProvider/*, ErrorBoundary */ } from '@rollbar/react';
+import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
 import { SocketEmitContextProvider } from './socketEmitContext.js';
 import { AuthContextProvider } from './authContext.js';
 import './index.css';
@@ -26,7 +26,7 @@ const app = async () => {
   root.render(
     <React.StrictMode>
       <RollbarProvider config={rollbarConfig}>
-        {/* <ErrorBoundary> */}
+        <ErrorBoundary>
           <ReduxProvider store={store}>
             <AuthContextProvider>
               <SocketEmitContextProvider socket={socket}>
@@ -35,7 +35,7 @@ const app = async () => {
               </SocketEmitContextProvider>
             </AuthContextProvider>
           </ReduxProvider>
-        {/* </ErrorBoundary> */}
+        </ErrorBoundary>
       </RollbarProvider>
     </React.StrictMode>
   );
