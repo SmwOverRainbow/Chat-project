@@ -5,14 +5,12 @@ filter.loadDictionary('ru');
 filter.loadDictionary('en');
 
 export const getData = async (token) => {
-  try {
-    const response = await axios.get('/api/v1/data', { headers: { 'Authorization': `Bearer ${token}` }});
-    return response.data;
-  } catch (e) {
-    throw e;
-  }
+  const response = await axios.get('/api/v1/data', { headers: { Authorization: `Bearer ${token}` } });
+  return response.data;
 };
 
 export const isProfanity = (str) => filter.check(str);
 
-export const getCensoredMessage = (message) => isProfanity(message) ? filter.clean(message) : message;
+export const getCensoredMessage = (message) => (
+  isProfanity(message) ? filter.clean(message) : message
+);

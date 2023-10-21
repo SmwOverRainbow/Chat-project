@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Navbar, Button } from 'react-bootstrap';
 import { AuthContext } from '../authContext.js';
@@ -15,7 +15,7 @@ const Layout = () => {
       logOut();
     }
     navigate('/login');
-  }
+  };
 
   return (
     <div className="d-flex flex-column h-100">

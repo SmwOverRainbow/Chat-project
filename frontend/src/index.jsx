@@ -12,7 +12,6 @@ import store from './slices/index.js';
 import App from './components/App.jsx';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 const app = async () => {
   const socket = io();
   await init(socket);
@@ -37,7 +36,7 @@ const app = async () => {
           </ReduxProvider>
         </ErrorBoundary>
       </RollbarProvider>
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 };
 

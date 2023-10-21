@@ -1,4 +1,4 @@
- const resources = {
+const resources = {
   ru: {
     translation: {
       layout: {

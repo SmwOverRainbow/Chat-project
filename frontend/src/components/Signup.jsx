@@ -17,23 +17,23 @@ const Signup = () => {
   const { t } = useTranslation();
   const schema = yup.object().shape({
     username: yup.string()
-                .required(t('signupPage.errors.required'))
-                .min(3, t('signupPage.errors.minLengthName'))
-                .max(20, t('signupPage.errors.maxLengthName'))
-                .test({
-                  name: 'isProfanity',
-                  skipAbsent: true,
-                  test(value, ctx) {
-                    return isProfanity(value) ? ctx.createError({ message: t('signupPage.errors.obsceneLexicon') }) : true;
-                  }
-                }),
+      .required(t('signupPage.errors.required'))
+      .min(3, t('signupPage.errors.minLengthName'))
+      .max(20, t('signupPage.errors.maxLengthName'))
+      .test({
+        name: 'isProfanity',
+        skipAbsent: true,
+        test(value, ctx) {
+          return isProfanity(value) ? ctx.createError({ message: t('signupPage.errors.obsceneLexicon') }) : true;
+        },
+      }),
     password: yup.string()
-                .required(t('signupPage.errors.required'))
-                .min(6, t('signupPage.errors.minLengthPassword')),
+      .required(t('signupPage.errors.required'))
+      .min(6, t('signupPage.errors.minLengthPassword')),
     repeatPassword: yup.string()
-                      .required(t('signupPage.errors.required'))
-                      .min(6, t('signupPage.errors.minLengthPassword'))
-                      .oneOf([yup.ref('password'), null], t('signupPage.errors.mustMatch')),
+      .required(t('signupPage.errors.required'))
+      .min(6, t('signupPage.errors.minLengthPassword'))
+      .oneOf([yup.ref('password'), null], t('signupPage.errors.mustMatch')),
   });
 
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ const Signup = () => {
         const response = await axios.post('/api/v1/signup', { username, password });
         const { token, username: responseUsername } = response.data;
         logIn(token, responseUsername);
-        navigate('/', { replace: false })
+        navigate('/', { replace: false });
       } catch (e) {
         if (e.response && e.response.status === 409) {
           setServerErrMessage(t('signupPage.errors.alreadyExists'));
@@ -80,7 +80,7 @@ const Signup = () => {
                 </Col>
                 <Col className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                   <Form className="col-12 col-md-12 mt-3 mt-mb-0" onSubmit={formik.handleSubmit} noValidate>
-                    <h1 class="text-center mb-4">{t('signupPage.signup')}</h1>
+                    <h1 className="text-center mb-4">{t('signupPage.signup')}</h1>
                     <FloatingLabel
                       controlId="username"
                       label={t('signupPage.usernameLabel')}
@@ -93,7 +93,9 @@ const Signup = () => {
                         placeholder="username"
                         onChange={formik.handleChange}
                         value={formik.values.username}
-                        isInvalid={(formik.touched.username && formik.errors.username) || serverErrMessage}
+                        isInvalid={
+                          (formik.touched.username && formik.errors.username) || serverErrMessage
+                        }
                       />
                       <Form.Control.Feedback type="invalid" tooltip>{formik.errors.username}</Form.Control.Feedback>
                     </FloatingLabel>
@@ -108,7 +110,9 @@ const Signup = () => {
                         placeholder="password"
                         onChange={formik.handleChange}
                         value={formik.values.password}
-                        isInvalid={(formik.touched.password && formik.errors.password) || serverErrMessage}
+                        isInvalid={
+                          (formik.touched.password && formik.errors.password) || serverErrMessage
+                        }
                       />
                       <Form.Control.Feedback type="invalid" tooltip>{formik.errors.password}</Form.Control.Feedback>
                     </FloatingLabel>
@@ -123,7 +127,10 @@ const Signup = () => {
                         type="password"
                         onChange={formik.handleChange}
                         value={formik.values.repeatPassword}
-                        isInvalid={(formik.touched.repeatPassword && formik.errors.repeatPassword) || serverErrMessage}
+                        isInvalid={
+                          (formik.touched.repeatPassword && formik.errors.repeatPassword)
+                          || serverErrMessage
+                        }
                       />
                       <Form.Control.Feedback type="invalid" tooltip>{formik.errors.repeatPassword || serverErrMessage}</Form.Control.Feedback>
                     </FloatingLabel>

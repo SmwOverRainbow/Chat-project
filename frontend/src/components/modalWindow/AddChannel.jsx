@@ -11,9 +11,8 @@ import { addOneChannel, setCurrentChannelId } from '../../slices/channelsSlice.j
 import { isProfanity } from '../../utils/helpers.js';
 
 const AddChannel = () => {
-  const channelsNames = useSelector((state) => {
-    return state.channels.ids.map((id) => state.channels.entities[id].name);
-  });
+  const channelsNames = useSelector((state) => (
+    state.channels.ids.map((id) => state.channels.entities[id].name)));
   const { show } = useSelector((state) => state.modal);
 
   const [isFormDisabled, setFormDisabled] = useState(false);
@@ -24,16 +23,16 @@ const AddChannel = () => {
 
   const schema = yup.object({
     name: yup.string().required(t('modal.errors.notEmpty'))
-            .min(3, t('modal.errors.minLength'))
-            .max(20, t('modal.errors.maxLength'))
-            .notOneOf(channelsNames, t('modal.errors.unique'))
-            .test({
-              name: 'isProfanity',
-              skipAbsent: true,
-              test(value, ctx) {
-                return isProfanity(value) ? ctx.createError({ message: t('modal.errors.obsceneLexicon') }) : true;
-              }
-            }),
+      .min(3, t('modal.errors.minLength'))
+      .max(20, t('modal.errors.maxLength'))
+      .notOneOf(channelsNames, t('modal.errors.unique'))
+      .test({
+        name: 'isProfanity',
+        skipAbsent: true,
+        test(value, ctx) {
+          return isProfanity(value) ? ctx.createError({ message: t('modal.errors.obsceneLexicon') }) : true;
+        },
+      }),
   });
 
   const handleSubmit = (nameChannel) => {
@@ -46,7 +45,7 @@ const AddChannel = () => {
         dispatch(setCurrentChannelId(respData.id));
       })
       .catch(() => notifyError(t('toasts.serverErr')))
-      .finally(() => setFormDisabled(false))
+      .finally(() => setFormDisabled(false));
   };
 
   const formik = useFormik({
@@ -100,7 +99,6 @@ const AddChannel = () => {
       </Modal.Footer>
     </Modal>
   );
-}
+};
 
 export default AddChannel;
-  

@@ -3,8 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import resources from './locales/ru.js';
 import store from './slices/index.js';
 import {
-  addOneChannel, removeChannel, renameChannel, setCurrentChannelId
-  } from './slices/channelsSlice.js';
+  addOneChannel, removeChannel, renameChannel, setCurrentChannelId,
+} from './slices/channelsSlice.js';
 import { addOneMessage } from './slices/messagesSlice.js';
 
 const init = async (socket) => {
@@ -21,7 +21,7 @@ const init = async (socket) => {
       dispatch(setCurrentChannelId(1));
     }
   });
-  socket.on('renameChannel', (channel) => dispatch(renameChannel({ id: channel.id, changes: { name: channel.name }})));
+  socket.on('renameChannel', (channel) => dispatch(renameChannel({ id: channel.id, changes: { name: channel.name } })));
 
   const i18nextInstance = i18n.createInstance();
   await i18nextInstance
@@ -30,7 +30,7 @@ const init = async (socket) => {
       lng: 'ru',
       debug: true,
       resources,
-    })
+    });
 };
 
 export default init;

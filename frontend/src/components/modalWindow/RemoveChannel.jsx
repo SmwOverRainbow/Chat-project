@@ -22,11 +22,11 @@ const RemoveChannel = () => {
     clarify('removeChannel', { id: data.id })
       .then(() => {
         dispatch(closeWindow());
-        dispatch(setCurrentChannelId(defaultChannelId))
+        dispatch(setCurrentChannelId(defaultChannelId));
         notifySuccess(t('toasts.deleteChannel'));
       })
       .catch(() => notifyError(t('toasts.serverErr')))
-      .finally(() => setRemoveBtnDisabled(false))
+      .finally(() => setRemoveBtnDisabled(false));
   };
 
   return (
@@ -35,7 +35,7 @@ const RemoveChannel = () => {
         <Modal.Title>{t('modal.removeChannelTitle')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      {t('modal.areYouSure')}
+        {t('modal.areYouSure')}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
@@ -47,7 +47,6 @@ const RemoveChannel = () => {
       </Modal.Footer>
     </Modal>
   );
-}
+};
 
 export default RemoveChannel;
-  

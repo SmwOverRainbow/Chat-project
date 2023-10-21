@@ -1,4 +1,6 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, {
+  useContext, useState, useRef, useEffect,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,9 +13,8 @@ import { closeWindow } from '../../slices/modalSlice.js';
 import { isProfanity } from '../../utils/helpers.js';
 
 const RenameChannel = () => {
-  const channelsNames = useSelector((state) => {
-    return state.channels.ids.map((id) => state.channels.entities[id].name);
-  });
+  const channelsNames = useSelector((state) => (
+    state.channels.ids.map((id) => state.channels.entities[id].name)));
   const { show, data } = useSelector((state) => state.modal);
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -30,16 +31,16 @@ const RenameChannel = () => {
 
   const schema = yup.object({
     name: yup.string().required(t('modal.errors.notEmpty'))
-            .min(3, t('modal.errors.minLength'))
-            .max(20, t('modal.errors.maxLength'))
-            .notOneOf(channelsNames, t('modal.errors.unique'))
-            .test({
-              name: 'isProfanity',
-              skipAbsent: true,
-              test(value, ctx) {
-                return isProfanity(value) ? ctx.createError({ message: t('modal.errors.obsceneLexicon') }) : true;
-              }
-            }),
+      .min(3, t('modal.errors.minLength'))
+      .max(20, t('modal.errors.maxLength'))
+      .notOneOf(channelsNames, t('modal.errors.unique'))
+      .test({
+        name: 'isProfanity',
+        skipAbsent: true,
+        test(value, ctx) {
+          return isProfanity(value) ? ctx.createError({ message: t('modal.errors.obsceneLexicon') }) : true;
+        },
+      }),
   });
 
   const handleSubmit = (nameChannel) => {
@@ -50,7 +51,7 @@ const RenameChannel = () => {
         notifySuccess(t('toasts.renameChannel'));
         dispatch(renameChannel({ id: data.id, update: { name: nameChannel } }));
       })
-      .catch((e) => notifyError(t('toasts.serverErr')))
+      .catch(() => notifyError(t('toasts.serverErr')))
       .finally(() => setFormDisabled(false));
   };
 
@@ -106,7 +107,6 @@ const RenameChannel = () => {
       </Modal.Footer>
     </Modal>
   );
-}
+};
 
 export default RenameChannel;
-  

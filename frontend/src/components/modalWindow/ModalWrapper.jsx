@@ -1,10 +1,10 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
 import AddChannel from './AddChannel.jsx';
 import RemoveChannel from './RemoveChannel.jsx';
 import RenameChannel from './RenameChannel.jsx';
 
 const ModalWrapper = () => {
-
   const modalTypes = {
     addChannel: AddChannel,
     removeChannel: RemoveChannel,
@@ -22,4 +22,4 @@ const ModalWrapper = () => {
   );
 };
 
-export default ModalWrapper
+export default ModalWrapper;

@@ -1,3 +1,4 @@
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Image } from 'react-bootstrap';
 import img from '../images/notFound.jpeg';

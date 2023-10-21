@@ -8,8 +8,8 @@ import {
 } from 'react-bootstrap';
 import ModalWrapper from './modalWindow/ModalWrapper.jsx';
 import {
-  addManyChannels, setCurrentChannelId
-  } from '../slices/channelsSlice.js';
+  addManyChannels, setCurrentChannelId,
+} from '../slices/channelsSlice.js';
 import { addManyMessages } from '../slices/messagesSlice.js';
 import { SocketEmitContext } from '../socketEmitContext.js';
 import { AuthContext } from '../authContext.js';
@@ -60,8 +60,8 @@ const ChatPage = () => {
   }, [navigate, dispatch, channels.currentChannelId, token, logOut]);
 
   const countMessages = messages.ids.reduce((acc, id) => {
-    if(messages.entities[id].channelId === channels.currentChannelId) {
-      acc += 1;
+    if (messages.entities[id].channelId === channels.currentChannelId) {
+      return acc + 1;
     }
     return acc;
   }, 0);
@@ -72,17 +72,18 @@ const ChatPage = () => {
     initialValues: {
       message: '',
       channelId: 1,
-      username: username,
+      username,
     },
     onSubmit: (values, actions) => {
+      // eslint-disable-next-line no-param-reassign
       values.channelId = channels.currentChannelId;
       if (values.message === '') {
         return null;
       }
-      clarify('newMessage', values)
+      return clarify('newMessage', values)
         .then(() => {
           actions.resetForm();
-          })
+        })
         .catch(() => {
           notifyError(t('chatPage.toasts.serverErr'));
         })
@@ -90,7 +91,7 @@ const ChatPage = () => {
     },
   });
 
-  const handleClickAddChannel = () => dispatch(showWindow({type: 'addChannel', data: {}}));
+  const handleClickAddChannel = () => dispatch(showWindow({ type: 'addChannel', data: {} }));
 
   return (
     <Container className="h-100 my-4 overflow-hidden rounded shadow">
@@ -117,7 +118,7 @@ const ChatPage = () => {
                 <Nav.Item className="w-100" key={id}>
                   <Dropdown as={ButtonGroup} className="d-flex mt-1">
                     <Button variant="" className={`w-100 rounded-0 text-start text-truncate ${classNamesActive}`} onClick={() => dispatch(setCurrentChannelId(channel.id))}>
-                      <span class="me-1">#</span>{channel.name}
+                      <span className="me-1">#</span>{channel.name}
                     </Button>
                     {channel.removable && (
                       <>
@@ -125,10 +126,10 @@ const ChatPage = () => {
                           <span className="visually-hidden">{t('chatPage.labelManage')}</span>
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => dispatch(showWindow({ type: 'removeChannel', data: { id }}))}>
+                          <Dropdown.Item onClick={() => dispatch(showWindow({ type: 'removeChannel', data: { id } }))}>
                             {t('chatPage.deleteDropdownBtn')}
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => dispatch(showWindow({ type: 'renameChannel', data: { name: channel.name, id }}))}>
+                          <Dropdown.Item onClick={() => dispatch(showWindow({ type: 'renameChannel', data: { name: channel.name, id } }))}>
                             {t('chatPage.renameDropdownBtn')}
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -136,7 +137,7 @@ const ChatPage = () => {
                     )}
                   </Dropdown>
                 </Nav.Item>
-              )
+              );
             })}
           </Nav>
         </Col>
@@ -153,13 +154,12 @@ const ChatPage = () => {
                 const message = messages.entities[id];
                 if (message.channelId === activeChannel.id) {
                   return (
-                    <div className="text-break mb-2">
-                      <b>{message.username}</b>: <span>{getCensoredMessage(message.message)}</span> 
+                    <div className="text-break mb-2" key={id}>
+                      <b>{message.username}</b>: <span>{getCensoredMessage(message.message)}</span>
                     </div>
                   );
-                } else {
-                  return null;
-                } 
+                }
+                return null;
               })}
             </div>
             <div className="mt-auto px-5 py-3">
@@ -188,7 +188,7 @@ const ChatPage = () => {
         </Col>
       </Row>
     </Container>
-  )
+  );
 };
 
 export default ChatPage;

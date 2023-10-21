@@ -18,7 +18,7 @@ const messageSlice = createSlice({
         state.entities[id].channelId === removeChannelId
       ));
       messagesAdapter.removeMany(state, messagesIdsForRemove);
-    })
+    });
   },
 });
 
