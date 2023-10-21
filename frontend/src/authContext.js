@@ -9,7 +9,7 @@ export const AuthContextProvider = (props) => {
   const [token, setToken] = useState(tokenFromLocalStorage);
   const [username, setUsername] = useState(usernameFromLocalStorage);
 
-  const authObject = useMemo({
+  const authObject = useMemo(() => ({
     token,
     isLoggedIn: () => Boolean(token),
     logOut: () => {
@@ -25,7 +25,7 @@ export const AuthContextProvider = (props) => {
       setUsername(responseUsername);
     },
     username,
-  });
+  }), []);
 
   return (
     <AuthContext.Provider value={authObject}>{ children }</AuthContext.Provider>
