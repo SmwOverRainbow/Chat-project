@@ -171,7 +171,6 @@ const ChatPage = () => {
               <Form className="py-1 border rounded-2" onSubmit={formik.handleSubmit} noValidate>
                 <InputGroup>
                   <Form.Control
-                    autoFocus
                     name="message"
                     ref={inputRef}
                     className="border-0 p-0 ps-2 rounded-2"

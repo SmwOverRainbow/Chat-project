@@ -25,7 +25,7 @@ export const AuthContextProvider = (props) => {
       setUsername(responseUsername);
     },
     username,
-  }), []);
+  }), [token, username]);
 
   return (
     <AuthContext.Provider value={authObject}>{ children }</AuthContext.Provider>

@@ -82,7 +82,6 @@ const RenameChannel = () => {
         <Form onSubmit={formik.handleSubmit}>
           <Form.Group className="mt-3 mt-mb-0">
             <Form.Control
-              autoFocus
               id="nameChannelInput"
               name="name"
               type="text"
