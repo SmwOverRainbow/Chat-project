@@ -21,12 +21,12 @@ const RenameChannel = () => {
   const [isFormDisabled, setFormDisabled] = useState(false);
   const inputRef = useRef();
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     inputRef.current.focus();
-  //     inputRef.current.select();
-  //   });
-  // }, []);
+  useEffect(() => {
+    setTimeout(() => {
+      inputRef.current.focus();
+      inputRef.current.select();
+    });
+  }, []);
 
   const schema = yup.object({
     name: yup.string().required(t('modal.errors.notEmpty'))
@@ -80,7 +80,6 @@ const RenameChannel = () => {
       <Modal.Body>
         <Form onSubmit={formik.handleSubmit}>
           <Form.Group className="mt-3 mt-mb-0">
-            <Form.Label htmlFor="nameChannelInput" hidden>{t('modal.label')}</Form.Label>
             <Form.Control
               autoFocus={true}
               id="nameChannelInput"
@@ -92,6 +91,7 @@ const RenameChannel = () => {
               className={`w-100 ${formik.errors.name && formik.touched.name ? 'is-invalid' : ''}`}
               disabled={isFormDisabled}
             />
+            <Form.Label htmlFor="nameChannelInput" visuallyHidden>{t('modal.label')}</Form.Label>
             <Form.Control.Feedback className="invalid-feedback">{formik.errors.name && formik.touched.name ? formik.errors.name : null}</Form.Control.Feedback>
           </Form.Group>
         </Form>
