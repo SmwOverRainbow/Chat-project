@@ -85,7 +85,7 @@ const ChatPage = () => {
           actions.resetForm();
         })
         .catch(() => {
-          notifyError(t('chatPage.toasts.serverErr'));
+          notifyError(t('toasts.serverErr'));
         })
         .finally(() => actions.setSubmitting(false));
     },
