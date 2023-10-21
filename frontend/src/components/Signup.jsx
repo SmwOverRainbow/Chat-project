@@ -87,7 +87,7 @@ const Signup = () => {
                       className="mb-3"
                     >
                       <Form.Control
-                        autoFocus={true}
+                        autoFocus
                         name="username"
                         type="text"
                         placeholder="username"

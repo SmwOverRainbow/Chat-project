@@ -10,7 +10,10 @@ const NotFound = () => {
     <Container className="h-100 bg-white text-center align-items-center pt-5" fluid>
       <Image src={img} width={250} height={250} alt="page not found" fluid className="mt-5" />
       <h1 className="h4 text-muted mt-5">{t('page404.notFound')}</h1>
-      <p className="text-muted">{t('page404.linkTo')}<a href="/">{t('page404.toMainPage')}</a></p>
+      <p className="text-muted">
+        {t('page404.linkTo')}
+        <a href="/">{t('page404.toMainPage')}</a>
+      </p>
     </Container>
   );
 };

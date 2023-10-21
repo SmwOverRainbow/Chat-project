@@ -76,7 +76,7 @@ const AddChannel = () => {
           <Form.Group className="mt-3 mt-mb-0">
             <Form.Label htmlFor="nameChannelInput" hidden>{t('modal.label')}</Form.Label>
             <Form.Control
-              autoFocus={true}
+              autoFocus
               id="nameChannelInput"
               name="name"
               type="text"

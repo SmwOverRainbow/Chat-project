@@ -118,11 +118,12 @@ const ChatPage = () => {
                 <Nav.Item className="w-100" key={id}>
                   <Dropdown as={ButtonGroup} className="d-flex mt-1">
                     <Button variant="" className={`w-100 rounded-0 text-start text-truncate ${classNamesActive}`} onClick={() => dispatch(setCurrentChannelId(channel.id))}>
-                      <span className="me-1">#</span>{channel.name}
+                      <span className="me-1">#</span>
+                      {channel.name}
                     </Button>
                     {channel.removable && (
                       <>
-                        <Dropdown.Toggle aria-expanded="false" variant={''} className={`flex-grow-0 dropdown-toggle-split ${classNamesActive}`}>
+                        <Dropdown.Toggle aria-expanded="false" variant="" className={`flex-grow-0 dropdown-toggle-split ${classNamesActive}`}>
                           <span className="visually-hidden">{t('chatPage.labelManage')}</span>
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
@@ -145,7 +146,10 @@ const ChatPage = () => {
           <div className="d-flex flex-column h-100">
             <div className="bg-light mb-4 p-3 shadow-sm small">
               <p className="m-0">
-                <b># {activeChannel ? activeChannel.name : 'general'}</b>
+                <b>
+                  <span># </span>
+                  {activeChannel ? activeChannel.name : 'general'}
+                </b>
               </p>
               <span className="text-muted">{t('chatPage.messageCount.count', { count: countMessages })}</span>
             </div>
@@ -155,7 +159,8 @@ const ChatPage = () => {
                 if (message.channelId === activeChannel.id) {
                   return (
                     <div className="text-break mb-2" key={id}>
-                      <b>{message.username}</b>: <span>{getCensoredMessage(message.message)}</span>
+                      <b>{message.username}</b>
+                      {`: ${getCensoredMessage(message.message)}`}
                     </div>
                   );
                 }
@@ -166,7 +171,7 @@ const ChatPage = () => {
               <Form className="py-1 border rounded-2" onSubmit={formik.handleSubmit} noValidate>
                 <InputGroup>
                   <Form.Control
-                    autoFocus={true}
+                    autoFocus
                     name="message"
                     ref={inputRef}
                     className="border-0 p-0 ps-2 rounded-2"

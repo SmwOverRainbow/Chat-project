@@ -10,7 +10,7 @@ import Signup from './Signup.jsx';
 const App = () => (
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Layout />} >
+      <Route path="/" element={<Layout />}>
         <Route index element={<ChatPage />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
