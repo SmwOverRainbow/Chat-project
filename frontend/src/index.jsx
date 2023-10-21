@@ -17,8 +17,8 @@ const app = async () => {
   await init(socket);
 
   const rollbarConfig = {
-    accessToken: 'cec2258c5f3a484185e7742861fa0ca2',
-    environment: 'testenv',
+    accessToken: process.env.REACT_APP_ROLLBAR_TOKEN,
+    environment: 'production',
   };
 
   const root = ReactDOM.createRoot(document.getElementById('root'));
