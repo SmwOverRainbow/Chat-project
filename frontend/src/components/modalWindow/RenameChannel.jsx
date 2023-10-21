@@ -21,12 +21,12 @@ const RenameChannel = () => {
   const [isFormDisabled, setFormDisabled] = useState(false);
   const inputRef = useRef();
 
-  useEffect(() => {
-    setTimeout(() => {
-      inputRef.current.focus();
-      inputRef.current.select();
-    });
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     inputRef.current.focus();
+  //     inputRef.current.select();
+  //   });
+  // }, []);
 
   const schema = yup.object({
     name: yup.string().required(t('modal.errors.notEmpty'))
