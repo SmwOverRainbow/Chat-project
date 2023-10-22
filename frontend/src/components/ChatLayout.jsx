@@ -69,11 +69,13 @@ const ChatLayout = () => {
         </Col>
         <Col className="p-0 h-100">
           {isSpinnerShow
-            ? (<div className="d-flex justify-content-center align-items-center h-100">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            </div>)
+            ? (
+              <div className="d-flex justify-content-center align-items-center h-100">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
+            )
             : <ChatBody />}
         </Col>
       </Row>
