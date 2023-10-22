@@ -4,7 +4,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { SocketEmitContext } from '../../socketEmitContext.js';
+import { SocketEmitContext } from '../../context/socketEmitContext.js';
 import { notifySuccess, notifyError } from '../../utils/toasts.js';
 import { closeWindow } from '../../slices/modalSlice.js';
 import { addOneChannel, setCurrentChannelId } from '../../slices/channelsSlice.js';

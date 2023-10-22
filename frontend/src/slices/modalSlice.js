@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   show: false,
   type: null,
-  data: {},
+  channelId: null,
 };
 
 const modalSlice = createSlice({
@@ -14,12 +14,12 @@ const modalSlice = createSlice({
     showWindow: (state, action) => {
       state.show = true;
       state.type = action.payload.type;
-      state.data = action.payload.data || {};
+      state.channelId = action.payload.channelId || null;
     },
     closeWindow: (state) => {
       state.show = false;
       state.type = null;
-      state.data = {};
+      state.channelId = null;
     },
   },
 });

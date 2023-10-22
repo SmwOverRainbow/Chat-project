@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Navbar, Button } from 'react-bootstrap';
-import { AuthContext } from '../authContext.js';
+import { AuthContext } from '../context/authContext.js';
 
 const Layout = () => {
   const { token, logOut } = useContext(AuthContext);

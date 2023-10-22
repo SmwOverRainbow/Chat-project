@@ -6,16 +6,18 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { SocketEmitContext } from '../../socketEmitContext.js';
+import { SocketEmitContext } from '../../context/socketEmitContext.js';
 import { renameChannel } from '../../slices/channelsSlice.js';
 import { notifySuccess, notifyError } from '../../utils/toasts.js';
 import { closeWindow } from '../../slices/modalSlice.js';
 import { isProfanity } from '../../utils/helpers.js';
 
 const RenameChannel = () => {
+  const { show, channelId } = useSelector((state) => state.modal);
+
   const channelsNames = useSelector((state) => (
     state.channels.ids.map((id) => state.channels.entities[id].name)));
-  const { show, data } = useSelector((state) => state.modal);
+  const oldChannelName = useSelector((state) => state.channels.entities[channelId].name);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const clarify = useContext(SocketEmitContext);
@@ -45,11 +47,11 @@ const RenameChannel = () => {
 
   const handleSubmit = (nameChannel) => {
     setFormDisabled(true);
-    return clarify('renameChannel', { name: nameChannel, id: data.id })
+    return clarify('renameChannel', { name: nameChannel, id: channelId })
       .then(() => {
         dispatch(closeWindow());
         notifySuccess(t('toasts.renameChannel'));
-        dispatch(renameChannel({ id: data.id, update: { name: nameChannel } }));
+        dispatch(renameChannel({ id: channelId, update: { name: nameChannel } }));
       })
       .catch(() => notifyError(t('toasts.serverErr')))
       .finally(() => setFormDisabled(false));
@@ -57,7 +59,7 @@ const RenameChannel = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: data.name,
+      name: oldChannelName,
     },
     validationSchema: schema,
     onSubmit: async (values, actions) => {

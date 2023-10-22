@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next';
 import {
   Container, Col, Row, Card, Image, Form, Button, FloatingLabel,
 } from 'react-bootstrap';
-import { AuthContext } from '../authContext.js';
+import { AuthContext } from '../context/authContext.js';
 import { notifyError } from '../utils/toasts.js';
-import { isProfanity } from '../utils/helpers.js';
+import { isProfanity, pathTo } from '../utils/helpers.js';
 import image from '../images/logoChat.jpeg';
 
 const Signup = () => {
@@ -50,7 +50,7 @@ const Signup = () => {
       try {
         setServerErrMessage('');
         const { username, password } = values;
-        const response = await axios.post('/api/v1/signup', { username, password });
+        const response = await axios.post(pathTo.signup(), { username, password });
         const { token, username: responseUsername } = response.data;
         logIn(token, responseUsername);
         navigate('/', { replace: false });

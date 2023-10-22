@@ -3,11 +3,13 @@ import { initReactI18next } from 'react-i18next';
 import resources from './locales/ru.js';
 import store from './slices/index.js';
 import {
-  addOneChannel, removeChannel, renameChannel, setCurrentChannelId,
+  addOneChannel, removeChannel, renameChannel,
 } from './slices/channelsSlice.js';
 import { addOneMessage } from './slices/messagesSlice.js';
+import { loadDictionaries } from './utils/helpers.js';
 
 const init = async (socket) => {
+  loadDictionaries();
   const { dispatch } = store;
 
   socket.on('newMessage', (message) => dispatch(addOneMessage(message)));
@@ -16,10 +18,6 @@ const init = async (socket) => {
   });
   socket.on('removeChannel', ({ id }) => {
     dispatch(removeChannel(id));
-    const state = store.getState();
-    if (id === state.channels.currentChannelId) {
-      dispatch(setCurrentChannelId(1));
-    }
   });
   socket.on('renameChannel', (channel) => dispatch(renameChannel({ id: channel.id, changes: { name: channel.name } })));
 

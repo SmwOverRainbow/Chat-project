@@ -56,11 +56,15 @@ const resources = {
         repeatPassword: 'Подтвердите пароль',
         btnSignup: 'Зарегистрироваться',
       },
-      chatPage: {
+      chatLayout: {
         channels: 'Каналы',
+      },
+      channels: {
         labelManage: 'Управление каналом',
         deleteDropdownBtn: 'Удалить',
         renameDropdownBtn: 'Переименовать',
+      },
+      chatBody: {
         messageCount: {
           count_one: '{{count}} сообщение',
           count_few: '{{count}} сообщения',

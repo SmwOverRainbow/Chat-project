@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import {
   Container, Col, Row, Card, Image, Form, FloatingLabel, Button,
 } from 'react-bootstrap';
-import { AuthContext } from '../authContext.js';
+import { AuthContext } from '../context/authContext.js';
+import { pathTo } from '../utils/helpers.js';
 import { notifyError } from '../utils/toasts.js';
 import image from '../images/logoChat.jpeg';
 
@@ -30,7 +31,7 @@ const Login = () => {
     },
     onSubmit: async (values, actions) => {
       try {
-        const response = await axios.post('/api/v1/login', values);
+        const response = await axios.post(pathTo.login(), values);
         const { token, username } = response.data;
         logIn(token, username);
         navigate('/', { replace: false });

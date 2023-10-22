@@ -2,14 +2,14 @@ import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { SocketEmitContext } from '../../socketEmitContext.js';
+import { SocketEmitContext } from '../../context/socketEmitContext.js';
 import { notifySuccess, notifyError } from '../../utils/toasts.js';
 import { closeWindow } from '../../slices/modalSlice.js';
 import { setCurrentChannelId } from '../../slices/channelsSlice.js';
 
 const RemoveChannel = () => {
   const dispatch = useDispatch();
-  const { show, data } = useSelector((state) => state.modal);
+  const { show, channelId } = useSelector((state) => state.modal);
   const { t } = useTranslation();
   const clarify = useContext(SocketEmitContext);
   const defaultChannelId = 1;
@@ -19,7 +19,7 @@ const RemoveChannel = () => {
   const handleClose = () => dispatch(closeWindow());
   const handleClickRemove = () => {
     setRemoveBtnDisabled(true);
-    clarify('removeChannel', { id: data.id })
+    clarify('removeChannel', { id: channelId })
       .then(() => {
         dispatch(closeWindow());
         dispatch(setCurrentChannelId(defaultChannelId));
