@@ -1,6 +1,7 @@
 import React, {
   useEffect, useContext, useState,
 } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +14,7 @@ import ModalWrapper from './modalWindow/ModalWrapper.jsx';
 import { addManyChannels } from '../slices/channelsSlice.js';
 import { addManyMessages } from '../slices/messagesSlice.js';
 import { AuthContext } from '../context/authContext.js';
-import { getData } from '../utils/helpers.js';
+import { pathTo } from '../utils/helpers.js';
 import { ReactComponent as AddChannelIcon } from '../images/addChannel.svg';
 import { showWindow } from '../slices/modalSlice.js';
 
@@ -23,27 +24,31 @@ const ChatLayout = () => {
   const { token, logOut } = useContext(AuthContext);
   const { t } = useTranslation();
 
+  const getData = async (requestToken) => {
+    const response = await axios.get(pathTo.getData(), { headers: { Authorization: `Bearer ${requestToken}` } });
+    return response.data;
+  };
+
   const channels = useSelector((state) => state.channels);
   const [isSpinnerShow, setIsSpinnerShow] = useState(false);
 
   useEffect(() => {
     setIsSpinnerShow(true);
-    if (token) {
-      getData(token)
-        .then((data) => {
-          setIsSpinnerShow(false);
-          dispatch(addManyChannels(data.channels));
-          dispatch(addManyMessages(data.messages));
-        })
-        .catch((e) => {
-          if (e.response.status === 401) {
-            logOut();
-            navigate('login', { replace: false });
-          }
-        });
-    } else {
+    if (!token) {
       navigate('login', { replace: false });
     }
+    getData(token)
+      .then((data) => {
+        setIsSpinnerShow(false);
+        dispatch(addManyChannels(data.channels));
+        dispatch(addManyMessages(data.messages));
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          logOut();
+          navigate('login', { replace: false });
+        }
+      });
   }, [navigate, dispatch, channels.currentChannelId, token, logOut]);
 
   const handleClickAddChannel = () => dispatch(showWindow({ type: 'addChannel' }));

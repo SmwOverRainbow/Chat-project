@@ -3,10 +3,11 @@ import { useSelector } from 'react-redux';
 import { Form, InputGroup, Button } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import * as filter from 'leo-profanity';
 import { SocketEmitContext } from '../context/socketEmitContext.js';
 import { AuthContext } from '../context/authContext.js';
 import { notifyError } from '../utils/toasts.js';
-import { getCensoredMessage } from '../utils/helpers.js';
+import { isProfanity } from '../utils/helpers.js';
 import { ReactComponent as AddMessageIcon } from '../images/addMessage.svg';
 
 const ChatBody = () => {
@@ -22,6 +23,10 @@ const ChatBody = () => {
     messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
   }, [messages.ids.length, channels.currentChannelId]);
 
+  const getCensoredMessage = (message) => (
+    isProfanity(message) ? filter.clean(message) : message
+  );
+
   useEffect(() => {
     setTimeout(() => {
       inputRef.current?.focus();
@@ -35,12 +40,13 @@ const ChatBody = () => {
       username,
     },
     onSubmit: (values, actions) => {
-      // eslint-disable-next-line no-param-reassign
-      values.channelId = channels.currentChannelId;
-      if (values.message === '') {
+      if (!values.message) {
         return null;
       }
-      return clarify('newMessage', values)
+      return clarify('newMessage', {
+        ...values,
+        channelId: channels.currentChannelId,
+      })
         .then(() => {
           actions.resetForm();
         })
@@ -52,12 +58,8 @@ const ChatBody = () => {
   });
 
   const activeChannel = channels.entities[channels.currentChannelId];
-  const countMessages = messages.ids.reduce((acc, id) => {
-    if (messages.entities[id].channelId === channels.currentChannelId) {
-      return acc + 1;
-    }
-    return acc;
-  }, 0);
+  const currentMessages = messages.ids
+    .filter((id) => messages.entities[id].channelId === channels.currentChannelId);
 
   return (
     <div className="d-flex flex-column h-100">
@@ -68,7 +70,7 @@ const ChatBody = () => {
             {activeChannel ? activeChannel.name : 'general'}
           </b>
         </p>
-        <span className="text-muted">{t('chatBody.messageCount.count', { count: countMessages })}</span>
+        <span className="text-muted">{t('chatBody.messageCount.count', { count: currentMessages.length })}</span>
       </div>
       <div ref={messagesContainerRef} id="messages-box" className="chat-messages overflow-auto px-5 ">
         {messages.ids.map((id) => {
